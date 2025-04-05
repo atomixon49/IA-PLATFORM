@@ -1,26 +1,292 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+@keyframes star-twinkle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+@keyframes nebula-flow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes quantum-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --dark-matter: #0a0a0f;
+  --nebula: #1a1a2f;
+  --accent: #7928ca;
+  --primary: #0070f3;
+  --secondary: #00c4cc;
+  --quantum: #8b5cf6;
+  --star: #eab308;
+  --space-dust: rgba(255, 255, 255, 0.05);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: #ffffff;
+  background: var(--dark-matter);
+  background-image: 
+    radial-gradient(2px 2px at calc(var(--star-x, 10) * 1%) calc(var(--star-y, 10) * 1%), var(--space-dust) 50%, transparent 0),
+    radial-gradient(2px 2px at calc(var(--star-x, 50) * 1%) calc(var(--star-y, 50) * 1%), var(--space-dust) 50%, transparent 0),
+    radial-gradient(2px 2px at calc(var(--star-x, 90) * 1%) calc(var(--star-y, 90) * 1%), var(--space-dust) 50%, transparent 0),
+    radial-gradient(circle at 25% 25%, rgba(121, 40, 202, 0.2) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(0, 112, 243, 0.2) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.15) 0%, transparent 100%);
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Efectos espaciales */
+.space-text {
+  background: linear-gradient(90deg, var(--accent), var(--primary), var(--quantum));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: nebula-flow 8s ease infinite;
+  background-size: 200% auto;
+}
+
+.quantum-gradient {
+  background: linear-gradient(45deg, var(--quantum), var(--accent), var(--primary));
+  background-size: 200% 200%;
+  animation: nebula-flow 10s ease infinite;
+}
+
+.tech-gradient {
+  background: linear-gradient(45deg, var(--primary), var(--secondary), var(--quantum));
+  background-size: 200% 200%;
+  animation: nebula-flow 10s ease infinite;
+}
+
+.space-card {
+  background: rgba(10, 10, 15, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(139, 92, 246, 0.1);
+  border-radius: 1rem;
+  transition: all 0.3s ease;
+}
+
+.space-card:hover {
+  border-color: rgba(139, 92, 246, 0.3);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+}
+
+.quantum-button {
+  background: linear-gradient(45deg, var(--quantum), var(--accent));
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.quantum-button::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 60%);
+  transform: rotate(45deg);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.quantum-button:hover::before {
+  opacity: 1;
+}
+
+.tech-button {
+  background: transparent;
+  color: white;
+  border: 2px solid var(--secondary);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.tech-button:hover {
+  background: var(--secondary);
+  box-shadow: 0 0 20px rgba(0, 196, 204, 0.4);
+}
+
+/* Efectos de partículas y estrellas */
+.star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: white;
+  border-radius: 50%;
+  animation: star-twinkle 3s ease-in-out infinite;
+}
+
+.floating {
+  animation: float 6s ease-in-out infinite;
+}
+
+.space-glow {
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+}
+
+.space-glow:hover {
+  box-shadow: 0 0 30px rgba(139, 92, 246, 0.5);
+}
+
+/* Efecto de scroll suave */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--dark-matter);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--quantum);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+/* Animaciones espaciales */
+.space-glow {
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+  transition: box-shadow 0.3s ease;
+}
+
+.space-glow:hover {
+  box-shadow: 0 0 25px rgba(99, 102, 241, 0.8);
+}
+
+/* Gradientes cuánticos */
+.quantum-gradient {
+  background: linear-gradient(135deg, var(--primary), var(--quantum));
+}
+
+.space-gradient {
+  background: linear-gradient(to right, var(--dark-matter), var(--nebula));
+}
+
+.tech-gradient {
+  background: linear-gradient(to right, var(--secondary), var(--accent));
+}
+
+/* Texto con efecto espacial */
+.space-text {
+  background: linear-gradient(to right, var(--accent), var(--primary));
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: spaceTextShimmer 8s ease infinite;
+  text-shadow: 0 0 30px rgba(121, 40, 202, 0.3);
+}
+
+@keyframes spaceTextShimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Botones cuánticos */
+.quantum-button {
+  background: linear-gradient(135deg, var(--accent), var(--quantum));
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  box-shadow: 0 0 20px rgba(121, 40, 202, 0.3);
+}
+
+.quantum-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--quantum), var(--primary));
+  z-index: -1;
+  transition: opacity 0.3s ease;
+  opacity: 0;
+}
+
+.quantum-button:hover::before {
+  opacity: 1;
+}
+
+/* Tarjetas con efecto espacial */
+.space-card {
+  background: rgba(26, 26, 47, 0.5);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(121, 40, 202, 0.1);
+  border-radius: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.space-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
+  border: 1px solid rgba(99, 102, 241, 0.4);
+}
+
+/* Scrollbar personalizado con tema espacial */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--dark-matter);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--primary), var(--quantum));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(var(--quantum), var(--primary));
 }
