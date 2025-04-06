@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useAuthContext } from '../context/AuthContext';
 
 interface NavLinkProps {
   href: string;
@@ -12,12 +13,12 @@ interface NavLinkProps {
 function NavLink({ href, children }: NavLinkProps) {
   return (
     <Link href={href}>
-      <motion.span 
+      <motion.span
         className="text-gray-300 hover:text-white text-sm font-medium relative cursor-pointer"
         whileHover={{ y: -2 }}
       >
         {children}
-        <motion.span 
+        <motion.span
           className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[var(--accent)]"
           whileHover={{ width: '100%' }}
           transition={{ duration: 0.2 }}
@@ -30,7 +31,7 @@ function NavLink({ href, children }: NavLinkProps) {
 function MobileNavLink({ href, children }: NavLinkProps) {
   return (
     <Link href={href}>
-      <motion.span 
+      <motion.span
         className="block text-gray-300 hover:text-white hover:bg-[var(--accent)]/10 px-4 py-3 rounded-lg text-base font-medium transition-colors duration-200"
         whileTap={{ scale: 0.98 }}
       >
@@ -43,6 +44,7 @@ function MobileNavLink({ href, children }: NavLinkProps) {
 export default function Navbar(): React.ReactNode {
   const [scrolled, setScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const { user, signOut, loading } = useAuthContext();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -57,20 +59,20 @@ export default function Navbar(): React.ReactNode {
   }, [scrolled]);
 
   return (
-    <motion.nav 
+    <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5 }}
       className={`fixed w-full z-50 backdrop-blur-xl border-b transition-colors duration-200 ${
-        scrolled 
-          ? 'bg-[var(--dark-matter)]/90 border-[var(--accent)]/20' 
+        scrolled
+          ? 'bg-[var(--dark-matter)]/90 border-[var(--accent)]/20'
           : 'bg-transparent border-transparent'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <motion.div 
+          <motion.div
             className="flex-shrink-0"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -91,14 +93,33 @@ export default function Navbar(): React.ReactNode {
               <NavLink href="/courses">Cursos</NavLink>
               <NavLink href="/resources">Recursos</NavLink>
               <NavLink href="/about">Acerca de</NavLink>
-              <motion.a
-                href="/auth?tab=login"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="quantum-button px-6 py-2 text-sm inline-block"
-              >
-                Iniciar Sesión
-              </motion.a>
+
+              {!loading && (
+                user ? (
+                  <div className="flex items-center space-x-4">
+                    <span className="text-sm text-gray-300">
+                      Hola, {user.user_metadata?.username || user.email}
+                    </span>
+                    <motion.button
+                      onClick={signOut}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="quantum-button px-6 py-2 text-sm inline-block"
+                    >
+                      Cerrar Sesión
+                    </motion.button>
+                  </div>
+                ) : (
+                  <motion.a
+                    href="/auth?tab=login"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="quantum-button px-6 py-2 text-sm inline-block"
+                  >
+                    Iniciar Sesión
+                  </motion.a>
+                )
+              )}
             </div>
           </div>
 
@@ -146,7 +167,7 @@ export default function Navbar(): React.ReactNode {
       </div>
 
       {/* Mobile menu */}
-      <motion.div 
+      <motion.div
         initial={false}
         animate={{
           height: isOpen ? 'auto' : 0,
@@ -159,14 +180,33 @@ export default function Navbar(): React.ReactNode {
           <MobileNavLink href="/courses">Cursos</MobileNavLink>
           <MobileNavLink href="/resources">Recursos</MobileNavLink>
           <MobileNavLink href="/about">Acerca de</MobileNavLink>
-          <motion.a
-            href="/auth?tab=login"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="w-full quantum-button py-3 text-sm mt-4 inline-block text-center"
-          >
-            Iniciar Sesión
-          </motion.a>
+
+          {!loading && (
+            user ? (
+              <div className="pt-2 border-t border-gray-700 mt-2">
+                <p className="text-sm text-gray-300 mb-2">
+                  Hola, {user.user_metadata?.username || user.email}
+                </p>
+                <motion.button
+                  onClick={signOut}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full quantum-button py-3 text-sm inline-block text-center"
+                >
+                  Cerrar Sesión
+                </motion.button>
+              </div>
+            ) : (
+              <motion.a
+                href="/auth?tab=login"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full quantum-button py-3 text-sm mt-4 inline-block text-center"
+              >
+                Iniciar Sesión
+              </motion.a>
+            )
+          )}
         </div>
       </motion.div>
     </motion.nav>

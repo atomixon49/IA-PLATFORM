@@ -1,9 +1,11 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import dynamic from 'next/dynamic';
 import AuthForm from '../../components/AuthForm';
 import { useSearchParams } from 'next/navigation';
+import { supabase } from '../../lib/supabase';
 
 const LoginScene = dynamic(() => import('../../components/3d/LoginScene'), {
   ssr: false,
@@ -13,12 +15,40 @@ const LoginScene = dynamic(() => import('../../components/3d/LoginScene'), {
 export default function AuthPage() {
   const searchParams = useSearchParams();
   const tab = searchParams.get('tab') as 'login' | 'register' | null;
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Verificar si el usuario ya está autenticado
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        setIsAuthenticated(true);
+      }
+    };
+
+    checkAuth();
+
+    // Suscribirse a cambios en la autenticación
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        setIsAuthenticated(true);
+        setSuccessMessage('Inicio de sesión exitoso. Redirigiendo...');
+      } else if (event === 'SIGNED_OUT') {
+        setIsAuthenticated(false);
+      }
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center relative overflow-hidden">
       {/* Fondo animado */}
       <LoginScene />
-      
+
       {/* Contenedor principal con efecto de cristal */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -44,28 +74,46 @@ export default function AuthPage() {
                 </div>
               </div>
             </motion.div>
-            
+
             <motion.h2
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
               className="text-3xl font-bold space-text mb-2"
             >
-              Bienvenido de nuevo
+              {isAuthenticated ? 'Bienvenido de nuevo' : tab === 'register' ? 'Crea tu cuenta' : 'Inicia sesión'}
             </motion.h2>
-            
+
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
               className="text-gray-400"
             >
-              Continúa tu viaje en el universo del aprendizaje
+              {isAuthenticated
+                ? 'Ya has iniciado sesión'
+                : 'Continúa tu viaje en el universo del aprendizaje'}
             </motion.p>
           </div>
 
+          {/* Mensaje de éxito */}
+          <AnimatePresence>
+            {successMessage && (
+              <motion.div
+                className="bg-green-500/20 border border-green-500 text-white px-4 py-3 rounded-lg mb-6"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+              >
+                {successMessage}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Formulario */}
-          <AuthForm initialTab={tab || 'login'} />
+          {!isAuthenticated && (
+            <AuthForm initialTab={tab || 'login'} />
+          )}
 
           {/* Enlaces adicionales */}
           <motion.div
@@ -74,9 +122,18 @@ export default function AuthPage() {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="mt-6 text-center text-sm"
           >
-            <a href="#" className="text-[var(--accent)] hover:text-[var(--primary)] transition-colors duration-200">
-              ¿Olvidaste tu contraseña?
-            </a>
+            {isAuthenticated ? (
+              <a
+                href="/"
+                className="quantum-button px-6 py-2 inline-block"
+              >
+                Ir al inicio
+              </a>
+            ) : (
+              <a href="#" className="text-[var(--accent)] hover:text-[var(--primary)] transition-colors duration-200">
+                ¿Olvidaste tu contraseña?
+              </a>
+            )}
           </motion.div>
         </div>
 
